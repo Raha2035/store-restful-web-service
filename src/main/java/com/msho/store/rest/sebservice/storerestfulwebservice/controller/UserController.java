@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 public class UserController {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -47,11 +47,11 @@ public class UserController {
 
     @DeleteMapping("/users/{id}")
     public void deleteUser(@PathVariable int id){
-        Optional<User> user = userRepository.findById(id);
+        userRepository.findById(id);
     }
 
     @PutMapping("/users/{id}")
-    public void updateUser(@PathVariable int id, @RequestBody User user){
+    public void modifyUser(@PathVariable int id, @RequestBody User user){
         Optional<User> oldUser = userRepository.findById(id);
 
         if(oldUser.isEmpty()){
