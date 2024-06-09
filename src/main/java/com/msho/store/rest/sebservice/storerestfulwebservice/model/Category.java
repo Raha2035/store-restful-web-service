@@ -1,8 +1,8 @@
 package com.msho.store.rest.sebservice.storerestfulwebservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
@@ -22,9 +22,10 @@ public class Category {
 
     private byte available;
 
-    /*@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @OneToMany (mappedBy = "category")
+    @JsonIgnore
     private List<Product> products;
-*/
+
     public Category() {
     }
 
@@ -65,6 +66,14 @@ public class Category {
 
     public void setAvailable(byte available) {
         this.available = available;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 
     @Override
