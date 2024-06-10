@@ -4,6 +4,7 @@ import com.msho.store.rest.sebservice.storerestfulwebservice.model.Category;
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.Product;
 import com.msho.store.rest.sebservice.storerestfulwebservice.repository.CategoryRepository;
 import com.msho.store.rest.sebservice.storerestfulwebservice.repository.ProductRepository;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -130,14 +131,14 @@ public class CategoryController {
         productRepository.deleteById(productId);
     }
 
-    /*@DeleteMapping("/categories/{categoryId}/products")
+    @DeleteMapping("/categories/{categoryId}/products")
     public void deleteAllProductsOfOneCategory(@PathVariable int categoryId){
         Optional<Category> category = categoryRepository.findById(categoryId);
 
         if(category.isEmpty())
             throw new RuntimeException("Category " + categoryId + " not found");
 
-         productRepository.deleteByCategory_ID(category.get().getID());
-    }*/
+         productRepository.deleteByCategory(category.get());
+    }
 }
 

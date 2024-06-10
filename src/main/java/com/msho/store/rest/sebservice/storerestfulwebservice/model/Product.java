@@ -14,7 +14,7 @@ public class Product {
     @Size(min=3, message = "Product's name should have at least 3 characters")
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Category category;
 
     private double fee;
