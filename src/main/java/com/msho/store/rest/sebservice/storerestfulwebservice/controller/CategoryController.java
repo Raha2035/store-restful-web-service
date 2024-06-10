@@ -129,5 +129,15 @@ public class CategoryController {
 
         productRepository.deleteById(productId);
     }
+
+    /*@DeleteMapping("/categories/{categoryId}/products")
+    public void deleteAllProductsOfOneCategory(@PathVariable int categoryId){
+        Optional<Category> category = categoryRepository.findById(categoryId);
+
+        if(category.isEmpty())
+            throw new RuntimeException("Category " + categoryId + " not found");
+
+         productRepository.deleteByCategory_ID(category.get().getID());
+    }*/
 }
 
