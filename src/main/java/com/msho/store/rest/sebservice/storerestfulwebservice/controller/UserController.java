@@ -1,7 +1,8 @@
 package com.msho.store.rest.sebservice.storerestfulwebservice.controller;
 
-import com.msho.store.rest.sebservice.storerestfulwebservice.model.User;
-import com.msho.store.rest.sebservice.storerestfulwebservice.repository.UserRepository;
+import com.msho.store.rest.sebservice.storerestfulwebservice.model.*;
+import com.msho.store.rest.sebservice.storerestfulwebservice.repository.*;
+import com.msho.store.rest.sebservice.storerestfulwebservice.service.OrdersService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +16,16 @@ import java.util.Optional;
 public class UserController {
     private final UserRepository userRepository;
 
-    public UserController(UserRepository userRepository) {
+    private final OrdersService ordersService;
+
+
+
+    public UserController(UserRepository userRepository,
+                          OrdersService ordersService) {
+
         this.userRepository = userRepository;
+        this.ordersService = ordersService;
+
     }
 
     @GetMapping("/users")
@@ -61,4 +70,33 @@ public class UserController {
         user.setID(oldUser.get().getID());
         userRepository.save(user);
     }
+
+    @GetMapping("/users/{userId}/all-orders")
+    public List<Orders> findAllOrdersOfOneUser(@PathVariable int userId){
+        return ordersService.findAllOrdersOfOneUser(userId);
+    }
+
+    @PostMapping("/users/{userId}/create-order")
+    public ResponseEntity<Object> createOrderForOneUser(@PathVariable int userId, @RequestBody Orders orders){
+        Orders savedOrders = ordersService.createOrderForOneUser(userId ,orders);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{orderId}")
+                .buildAndExpand(savedOrders.getId()).toUri();
+
+        return ResponseEntity.created(location).build();
+    }
+
+    @DeleteMapping("/users/{userId}/delete-order/{id}")
+    public void deleteOneOrderById(@PathVariable int userId, @PathVariable int id){
+        ordersService.deleteOrderById(userId, id);
+    }
+
+    @PutMapping("/users/{userId}/update-order/{id}")
+    public void modifyOrder(@PathVariable int userId, @PathVariable int id, @Valid @RequestBody Orders order){
+        ordersService.modifyOrder(userId, id, order);
+    }
 }
+
+

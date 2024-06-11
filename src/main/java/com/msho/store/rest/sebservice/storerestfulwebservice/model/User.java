@@ -1,10 +1,10 @@
 package com.msho.store.rest.sebservice.storerestfulwebservice.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+
+import java.util.List;
 
 @Entity
 public class User {
@@ -30,6 +30,9 @@ public class User {
      * type = 2 -> deletedClient
      * type = 3 -> deletedAdmin
      * */
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user",cascade = CascadeType.ALL)
+    private List<Orders> orders;
 
     public User() {
     }
