@@ -5,6 +5,7 @@ import com.msho.store.rest.sebservice.storerestfulwebservice.model.Product;
 import com.msho.store.rest.sebservice.storerestfulwebservice.repository.CategoryRepository;
 import com.msho.store.rest.sebservice.storerestfulwebservice.repository.ProductRepository;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -30,9 +31,9 @@ public class CategoryController {
     }
 
     @GetMapping("/categories/{id}")
-    public Category findOneCategories(@PathVariable int id){
+    public ResponseEntity<Category> findOneCategories(@PathVariable int id){
         Optional<Category> category = categoryRepository.findById(id);
-        return category.get();
+        return new ResponseEntity<>(category.get() , HttpStatus.OK);
     }
 
     @PostMapping("/categories")

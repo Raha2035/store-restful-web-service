@@ -114,8 +114,8 @@ public class OrdersService {
         if(order.getUser().getID() != userId)
             throw new RuntimeException("Access Denied");
         int numberOfOrderProduct = order.getNumber();
+        ordersRepository.delete(order);
 
-        ordersRepository.deleteById(id);
         Optional<StoresProducts> mappedStoreProduct = storesProductsRepository.findByStoreAndProduct(order.getStore(), order.getProduct());
         int inventory = mappedStoreProduct.get().getTotalCount();
 

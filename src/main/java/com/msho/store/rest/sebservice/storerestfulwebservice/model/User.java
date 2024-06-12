@@ -31,9 +31,6 @@ public class User {
      * type = 3 -> deletedAdmin
      * */
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user",cascade = CascadeType.ALL)
-    private List<Orders> orders;
-
     public User() {
     }
 
