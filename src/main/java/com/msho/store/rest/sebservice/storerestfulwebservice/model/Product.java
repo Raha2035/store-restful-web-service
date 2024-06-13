@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 @Entity
 public class Product {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ID;
 
     @JsonProperty("product-name")

@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 @Entity
 public class Store {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ID;
 
     @JsonProperty("store-name")

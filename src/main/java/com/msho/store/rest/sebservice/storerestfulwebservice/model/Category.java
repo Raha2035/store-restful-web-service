@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 public class Category {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ID;
 
     @JsonProperty("category-name")
