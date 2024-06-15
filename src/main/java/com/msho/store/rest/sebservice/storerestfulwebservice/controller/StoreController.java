@@ -31,12 +31,12 @@ public class StoreController {
         this.productRepository = productRepository;
     }
 
-    @GetMapping("/stores")
+    @GetMapping("/stores/all-stores")
     public List<Store> findAllStores(){
         return storeRepository.findAll();
     }
 
-    @GetMapping("/stores/{id}")
+    @GetMapping("/stores/get-store/{id}")
     public Store findOneStore(@PathVariable int id){
         Optional<Store> store = storeRepository.findById(id);
 
@@ -46,7 +46,7 @@ public class StoreController {
         return store.get();
     }
 
-    @PostMapping("/stores")
+    @PostMapping("/stores/create-store")
     public ResponseEntity<Object> createStore(@Valid @RequestBody Store store){
         Store savedStore = storeRepository.save(store);
 
@@ -56,12 +56,12 @@ public class StoreController {
         return ResponseEntity.created(location).build();
     }
 
-    @DeleteMapping("/stores/{id}")
+    @DeleteMapping("/stores/delete-store/{id}")
     public void deleteOneStore(@PathVariable int id){
         storeRepository.deleteById(id);
     }
 
-    @PutMapping("/stores/{id}")
+    @PutMapping("/stores/update-store/{id}")
     public void modifyStore(@PathVariable int id, @RequestBody Store store){
         Optional<Store> oldStore = storeRepository.findById(id);
 
@@ -73,7 +73,7 @@ public class StoreController {
         storeRepository.save(store);
     }
 
-    @GetMapping("/stores/{id}/products")
+    @GetMapping("/stores/{id}/all-products")
     public List<StoresProducts> findAllAvailableProductsOfOneStore(@PathVariable int id){
         Optional<Store> store = storeRepository.findById(id);
 
@@ -84,7 +84,7 @@ public class StoreController {
         return  rows;
     }
 
-    @PostMapping("/stores/{id}/products")
+    @PostMapping("/stores/{id}/create-products")
     public ResponseEntity<Object> createProductsForOneStore(@PathVariable int id , @Valid @RequestBody StoresProducts storesProducts){
         Optional<Store> store = storeRepository.findById(id);
 
@@ -105,7 +105,7 @@ public class StoreController {
         return ResponseEntity.created(location).build();
     }
 
-    @DeleteMapping("/stores/{storeId}/products/{productId}")
+    @DeleteMapping("/stores/{storeId}/products/delete-product/{productId}")
     public void deleteOneProductOfOneStore(@PathVariable int storeId, @PathVariable int productId){
         Optional<Store> store = storeRepository.findById(storeId);
 
@@ -120,7 +120,7 @@ public class StoreController {
         storesProductsRepository.deleteByStoreAndProduct(store.get(), product.get());
     }
 
-    @DeleteMapping("/stores/{storeId}/products")
+    @DeleteMapping("/stores/{storeId}/products/delete-all-products")
     public void deleteAllProductOfOneStore(@PathVariable int storeId){
         Optional<Store> store = storeRepository.findById(storeId);
 

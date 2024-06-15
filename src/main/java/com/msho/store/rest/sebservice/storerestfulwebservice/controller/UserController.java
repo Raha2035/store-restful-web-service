@@ -28,12 +28,12 @@ public class UserController {
 
     }
 
-    @GetMapping("/users")
+    @GetMapping("/users/all-users")
     public List<User> findAllUsers(){
         return userRepository.findAll();
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/users/get-user/{id}")
     public User findOneUser(@PathVariable int id){
         Optional<User> user = userRepository.findById(id);
 
@@ -44,7 +44,7 @@ public class UserController {
         return user.get();
     }
 
-    @PostMapping("/users")
+    @PostMapping("/users/create-user")
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user){
         User savedUser = userRepository.save(user);
 
@@ -54,12 +54,12 @@ public class UserController {
         return ResponseEntity.created(location).build();
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/users/delete-user/{id}")
     public void deleteUser(@PathVariable int id){
         userRepository.findById(id);
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("/users/update-user/{id}")
     public void modifyUser(@PathVariable int id, @RequestBody User user){
         Optional<User> oldUser = userRepository.findById(id);
 

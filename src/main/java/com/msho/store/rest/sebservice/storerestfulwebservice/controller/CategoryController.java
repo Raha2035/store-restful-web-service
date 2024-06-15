@@ -25,18 +25,18 @@ public class CategoryController {
         this.productRepository = productRepository;
     }
 
-    @GetMapping("/categories")
+    @GetMapping("/categories/all-categories")
     public List<Category> findAllCategories(){
         return categoryRepository.findAll();
     }
 
-    @GetMapping("/categories/{id}")
+    @GetMapping("/categories/get-category/{id}")
     public ResponseEntity<Category> findOneCategories(@PathVariable int id){
         Optional<Category> category = categoryRepository.findById(id);
         return new ResponseEntity<>(category.get() , HttpStatus.OK);
     }
 
-    @PostMapping("/categories")
+    @PostMapping("/categories/create-category")
     public ResponseEntity<Object> createCategory(@RequestBody Category category){
         Category savedCategory = categoryRepository.save(category);
 
@@ -46,12 +46,12 @@ public class CategoryController {
         return ResponseEntity.created(location).build();
     }
 
-    @DeleteMapping("/categories/{id}")
+    @DeleteMapping("/categories/delete-category/{id}")
     public void deleteOneCategory(@PathVariable int id){
         categoryRepository.deleteById(id);
     }
 
-    @PutMapping("/categories/{id}")
+    @PutMapping("/categories/update-category/{id}")
     public void modifyOneCategory(@PathVariable int id, @RequestBody Category category){
         Optional<Category> oldCategory = categoryRepository.findById(id);
 
@@ -63,7 +63,7 @@ public class CategoryController {
 
     }
 
-    @PostMapping("/categories/{categoryId}/products")
+    @PostMapping("/categories/{categoryId}/products/create-product")
     public ResponseEntity<Object> createProduct(@PathVariable int categoryId, @RequestBody Product product){
         Optional<Category> category = categoryRepository.findById(categoryId);
 
@@ -80,7 +80,7 @@ public class CategoryController {
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/categories/{categoryId}/products")
+    @GetMapping("/categories/{categoryId}/products/all-products")
     public List<Product> findAllProductsOfOneCategory(@PathVariable int categoryId){
         Optional<Category> category = categoryRepository.findById(categoryId);
 
@@ -91,7 +91,7 @@ public class CategoryController {
         return productRepository.findByCategory(category.get());
     }
 
-    @GetMapping("/categories/{categoryId}/products/{productId}")
+    @GetMapping("/categories/{categoryId}/products/get-product/{productId}")
     public Product findOneProductsOfOneCategory(@PathVariable int categoryId, @PathVariable int  productId){
         Optional<Category> category = categoryRepository.findById(categoryId);
 
@@ -102,7 +102,7 @@ public class CategoryController {
         return productRepository.findById(productId).get();
     }
 
-    @PutMapping("/categories/{categoryId}/products/{productId}")
+    @PutMapping("/categories/{categoryId}/products/update-product/{productId}")
     public void modifyOneProductOfOneCategory(@PathVariable int categoryId,
                                               @PathVariable int productId,
                                               @RequestBody Product product){
@@ -122,7 +122,7 @@ public class CategoryController {
         productRepository.save(product);
     }
 
-    @DeleteMapping("/categories/{categoryId}/products/{productId}")
+    @DeleteMapping("/categories/{categoryId}/products/delete-product/{productId}")
     public void deleteOneProductOfOneCategory(@PathVariable int categoryId, @PathVariable int productId){
         Optional<Category> category = categoryRepository.findById(categoryId);
 
@@ -132,7 +132,7 @@ public class CategoryController {
         productRepository.deleteById(productId);
     }
 
-    @DeleteMapping("/categories/{categoryId}/products")
+    @DeleteMapping("/categories/{categoryId}/products/delete-all-products")
     public void deleteAllProductsOfOneCategory(@PathVariable int categoryId){
         Optional<Category> category = categoryRepository.findById(categoryId);
 
