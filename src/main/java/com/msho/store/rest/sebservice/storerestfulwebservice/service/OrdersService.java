@@ -111,7 +111,7 @@ public class OrdersService {
             throw new RuntimeException("Order: " + id + " does not exist");
 
         Orders order = result.get();
-        if(order.getUser().getID() != userId)
+        if(order.getUser().getId() != userId)
             throw new RuntimeException("Access Denied");
         int numberOfOrderProduct = order.getNumber();
         ordersRepository.delete(order);
@@ -130,7 +130,7 @@ public class OrdersService {
             throw new RuntimeException("Order: " + id + " does not exist");
 
         Orders oldOrder = result.get();
-        if(oldOrder.getUser().getID() != userId)
+        if(oldOrder.getUser().getId() != userId)
             throw new RuntimeException("Access Denied");
 
         ordersRepository.save(order);

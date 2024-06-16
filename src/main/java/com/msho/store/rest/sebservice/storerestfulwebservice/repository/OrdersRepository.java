@@ -20,6 +20,6 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
     @Query(value = "update Orders o set o.number = :number where o.user = :user and o.store = :store and o.product = :product")
     void updateByUserAndStoreAndProduct(@Param("user") User user, @Param("store") Store store, @Param("product") Product product, @Param("number") int number);
 
-    @Query(value = "select o from Orders o left join User u on o.user.ID = u.ID")
+    @Query(value = "select o from Orders o left join User u on o.user.id = u.id")
     List<Orders> findAllByUserId(int userId);
 }

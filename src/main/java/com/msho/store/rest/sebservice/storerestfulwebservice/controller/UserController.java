@@ -4,7 +4,9 @@ import com.msho.store.rest.sebservice.storerestfulwebservice.model.*;
 import com.msho.store.rest.sebservice.storerestfulwebservice.repository.*;
 import com.msho.store.rest.sebservice.storerestfulwebservice.service.OrdersService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -18,14 +20,17 @@ public class UserController {
 
     private final OrdersService ordersService;
 
+    private final PasswordEncoder passwordEncoder;
+
 
 
     public UserController(UserRepository userRepository,
-                          OrdersService ordersService) {
+                          OrdersService ordersService,
+                          PasswordEncoder passwordEncoder) {
 
         this.userRepository = userRepository;
         this.ordersService = ordersService;
-
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/users/all-users")
@@ -45,13 +50,24 @@ public class UserController {
     }
 
     @PostMapping("/users/create-user")
-    public ResponseEntity<Object> createUser(@Valid @RequestBody User user){
-        User savedUser = userRepository.save(user);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}").buildAndExpand(savedUser.getID()).toUri();
-
-        return ResponseEntity.created(location).build();
+    public ResponseEntity<String> createUser(@Valid @RequestBody User user){
+        User savedUser = null;
+        ResponseEntity response = null;
+        try {
+            String hashPwd = passwordEncoder.encode(user.getPassword());
+            user.setPassword(hashPwd);
+            savedUser = userRepository.save(user);
+            if (savedUser.getId() > 0) {
+                response = ResponseEntity
+                        .status(HttpStatus.CREATED)
+                        .body("Given user details are successfully registered");
+            }
+        } catch (Exception ex) {
+            response = ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An exception occured due to " + ex.getMessage());
+        }
+        return response;
     }
 
     @DeleteMapping("/users/delete-user/{id}")
@@ -67,7 +83,7 @@ public class UserController {
             throw new RuntimeException("User doesnt exist");
         }
 
-        user.setID(oldUser.get().getID());
+        user.setId(oldUser.get().getId());
         userRepository.save(user);
     }
 
