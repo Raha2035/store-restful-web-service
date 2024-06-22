@@ -11,53 +11,109 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/*
+* REST controller for managing users and their orders.
+* */
 @RestController
+@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
     private final OrdersService ordersService;
 
+    /*
+    * Constructor for UserController.
+    *
+    * @param userService the user service
+    *
+    * @param ordersService the orders service
+    * */
     public UserController(UserService userService, OrdersService ordersService) {
         this.userService = userService;
         this.ordersService = ordersService;
     }
 
-    @GetMapping("/users/all-users")
+    /*
+    * Get all users.
+    *
+    * @return a list of all users
+    * */
+    @GetMapping("/all-users")
     public ResponseEntity<List<User>> getAllUsers(){
         return ResponseEntity.ok(userService.allUsers());
     }
 
-    @GetMapping("/users/get-user/{id}")
+    /*
+    * Get a user by ID.
+    *
+    * @param id the user ID
+    * @return the user with the specified ID
+    * */
+    @GetMapping("/get-user/{id}")
     public ResponseEntity<User> getUserById(@NotNull @PathVariable int id){
         return ResponseEntity.ok(userService.getSpecificUser(id));
     }
 
-    @DeleteMapping("/users/delete-user/{id}")
+    /*
+    * Delete a user by ID.
+    *
+    * @param id the user ID
+    * @return a response indicating the result of the deletion
+    * */
+    @DeleteMapping("/delete-user/{id}")
     public ResponseEntity<String> deleteUser(@NotNull @PathVariable int id){
        userService.deleteSpecificUser(id);
        return ResponseEntity.ok("user successfully deleted.");
     }
 
-    @GetMapping("/users/{userId}/all-orders")
+    /*
+    * Get all orders for a specific user.
+    *
+    * @param userId the user ID
+    * @return a list of orders for the specified user
+    * */
+    @GetMapping("/{userId}/all-orders")
     public ResponseEntity<List<Orders>> getAllOrdersByUserId(@PathVariable int userId){
         List<Orders> orders = ordersService.findAllOrdersOfOneUser(userId);
         return ResponseEntity.ok(orders);
     }
 
-    @PostMapping("/users/{userId}/create-order")
+    /*
+    * Create a new order for a specific user.
+    *
+    * @param userId the user ID
+    * @param order the order to create
+    * @return a response indicating the result of the creation
+    * */
+    @PostMapping("/{userId}/create-order")
     public ResponseEntity<String> createOrder(@PathVariable int userId,
                                               @RequestBody Orders order){
         ordersService.createOrderForOneUser(userId ,order);
-        return ResponseEntity.status( HttpStatus.CREATED).body("This order successfully saved");
+        return ResponseEntity.status( HttpStatus.CREATED).body("Order successfully saved");
     }
 
-    @DeleteMapping("/users/{userId}/delete-order/{id}")
+    /*
+    * Delete an order by ID for a specific user
+    *
+    * @param userId the user ID
+    * @param id the order ID
+    * @return a response indicating the result of the deletion
+    * */
+    @DeleteMapping("/{userId}/delete-order/{id}")
     public ResponseEntity<Object> deleteOrder(@PathVariable int userId,
                                               @PathVariable int id){
         ordersService.deleteOrderById(userId, id);
         return ResponseEntity.ok("Order successfully deleted");
     }
 
-    @PutMapping("/users/{userId}/update-order/{id}")
+    /*
+    * Update an order by ID for a specific user
+    *
+    * @param userId the user ID
+    * @param id the order ID
+    * @param order the updated order
+    * @return a response indicating the result of the update
+    * */
+    @PutMapping("/{userId}/update-order/{id}")
     public ResponseEntity<String> updateOrder(@PathVariable int userId,
                                               @PathVariable int id,
                                               @Valid @RequestBody Orders order){
