@@ -1,117 +1,67 @@
 package com.msho.store.rest.sebservice.storerestfulwebservice.controller;
 
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.*;
-import com.msho.store.rest.sebservice.storerestfulwebservice.repository.*;
 import com.msho.store.rest.sebservice.storerestfulwebservice.service.OrdersService;
+import com.msho.store.rest.sebservice.storerestfulwebservice.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class UserController {
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     private final OrdersService ordersService;
 
-    private final PasswordEncoder passwordEncoder;
+    public UserController(UserService userService, OrdersService ordersService) {
 
-
-
-    public UserController(UserRepository userRepository,
-                          OrdersService ordersService,
-                          PasswordEncoder passwordEncoder) {
-
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.ordersService = ordersService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/users/all-users")
-    public List<User> findAllUsers(){
-        return userRepository.findAll();
+    public ResponseEntity<Object> findAllUsers(){
+        return new ResponseEntity<>(userService.allUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/users/get-user/{id}")
-    public User findOneUser(@PathVariable int id){
-        Optional<User> user = userRepository.findById(id);
-
-        if(user.isEmpty()){
-            throw new RuntimeException("User " + id + " not found");
-        }
-
-        return user.get();
-    }
-
-    @PostMapping("/users/create-user")
-    public ResponseEntity<String> createUser(@Valid @RequestBody User user){
-        User savedUser = null;
-        ResponseEntity response = null;
-        try {
-            String hashPwd = passwordEncoder.encode(user.getPassword());
-            user.setPassword(hashPwd);
-            savedUser = userRepository.save(user);
-            if (savedUser.getId() > 0) {
-                response = ResponseEntity
-                        .status(HttpStatus.CREATED)
-                        .body("Given user details are successfully registered");
-            }
-        } catch (Exception ex) {
-            response = ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An exception occured due to " + ex.getMessage());
-        }
-        return response;
+    public ResponseEntity<User> findOneUser(@NotNull @PathVariable int id){
+        return new ResponseEntity<>(
+                userService.getSpecificUser(id)
+                , HttpStatus.OK);
     }
 
     @DeleteMapping("/users/delete-user/{id}")
-    public void deleteUser(@PathVariable int id){
-        userRepository.findById(id);
-    }
-
-    @PutMapping("/users/update-user/{id}")
-    public void modifyUser(@PathVariable int id, @RequestBody User user){
-        Optional<User> oldUser = userRepository.findById(id);
-
-        if(oldUser.isEmpty()){
-            throw new RuntimeException("User doesnt exist");
-        }
-
-        user.setId(oldUser.get().getId());
-        userRepository.save(user);
+    public ResponseEntity<String> deleteUser(@NotNull @PathVariable int id){
+       userService.deleteSpecificUser(id);
+       return new ResponseEntity<>("user successfully deleted.", HttpStatus.OK);
     }
 
     @GetMapping("/users/{userId}/all-orders")
-    public List<Orders> findAllOrdersOfOneUser(@PathVariable int userId){
-        return ordersService.findAllOrdersOfOneUser(userId);
+    public ResponseEntity<Object> findAllOrdersOfOneUser(@PathVariable int userId){
+        List<Orders> orders = ordersService.findAllOrdersOfOneUser(userId);
+        return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
     @PostMapping("/users/{userId}/create-order")
-    public ResponseEntity<Object> createOrderForOneUser(@PathVariable int userId, @RequestBody Orders orders){
-        Orders savedOrders = ordersService.createOrderForOneUser(userId ,orders);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{orderId}")
-                .buildAndExpand(savedOrders.getId()).toUri();
-
-        return ResponseEntity.created(location).build();
+    public ResponseEntity<Object> createOrderForOneUser(@PathVariable int userId, @RequestBody Orders order){
+        ordersService.createOrderForOneUser(userId ,order);
+        return new ResponseEntity<>("This order successfully saved", HttpStatus.CREATED);
     }
 
     @DeleteMapping("/users/{userId}/delete-order/{id}")
-    public void deleteOneOrderById(@PathVariable int userId, @PathVariable int id){
+    public ResponseEntity<Object> deleteOneOrderById(@PathVariable int userId, @PathVariable int id){
         ordersService.deleteOrderById(userId, id);
+        return new ResponseEntity<>("Order successfully deleted", HttpStatus.OK);
     }
 
     @PutMapping("/users/{userId}/update-order/{id}")
-    public void modifyOrder(@PathVariable int userId, @PathVariable int id, @Valid @RequestBody Orders order){
+    public ResponseEntity<Object> modifyOrder(@PathVariable int userId, @PathVariable int id, @Valid @RequestBody Orders order){
         ordersService.modifyOrder(userId, id, order);
+        return new ResponseEntity<>("Order successfully updated", HttpStatus.CREATED);
     }
 }
 

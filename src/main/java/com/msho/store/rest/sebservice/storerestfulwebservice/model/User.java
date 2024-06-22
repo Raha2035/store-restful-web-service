@@ -1,11 +1,11 @@
 package com.msho.store.rest.sebservice.storerestfulwebservice.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import jakarta.persistence.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -15,7 +15,6 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO,generator="native")
-    @GenericGenerator(name = "native",strategy = "native")
     private int id;
 
     private String firstName;
@@ -30,28 +29,20 @@ public class User implements UserDetails {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
-
-    /*@OneToMany(mappedBy = "user")
-    private List<Token> tokens;*/
-    private byte type;
-
-    /*
-     * type = 0 -> customer
-     * type = 1 -> admin
-     * type = 2 -> deletedClient
-     * type = 3 -> deletedAdmin
-     * */
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
 
     public User() {
     }
 
-    public User(int ID, String firstName, String lastName, String username, String password, Role role) {
+    public User(int ID, String firstName, String lastName, String username, String password, Role role, List<Token> tokens) {
         this.id = ID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
         this.password = password;
         this.role = role;
+        this.tokens = tokens;
     }
 
     public int getId() {
@@ -82,6 +73,26 @@ public class User implements UserDetails {
         return username;
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -102,37 +113,9 @@ public class User implements UserDetails {
         return true;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public byte getType() {
-        return type;
-    }
-
-    public void setType(byte type) {
-        this.type = type;
     }
 
     @Override
@@ -144,7 +127,6 @@ public class User implements UserDetails {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", role=" + role +
-                ", type=" + type +
                 '}';
     }
 }

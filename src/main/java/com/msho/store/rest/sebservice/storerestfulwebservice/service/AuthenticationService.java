@@ -24,9 +24,7 @@ public class AuthenticationService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-
     private final TokenRepository tokenRepository;
-
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationService(UserRepository repository,
@@ -107,14 +105,14 @@ public class AuthenticationService {
         tokenRepository.save(token);
     }
 
-    public ResponseEntity refreshToken(
+    public ResponseEntity<Object> refreshToken(
             HttpServletRequest request,
             HttpServletResponse response) {
         // extract the token from authorization header
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if(authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         String token = authHeader.substring(7);
@@ -135,10 +133,10 @@ public class AuthenticationService {
             revokeAllTokenByUser(user);
             saveUserToken(accessToken, refreshToken, user);
 
-            return new ResponseEntity(new AuthenticationResponse(accessToken, refreshToken, "New token generated"), HttpStatus.OK);
+            return new ResponseEntity<>(new AuthenticationResponse(accessToken, refreshToken, "New token generated"), HttpStatus.OK);
         }
 
-        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
     }
 }

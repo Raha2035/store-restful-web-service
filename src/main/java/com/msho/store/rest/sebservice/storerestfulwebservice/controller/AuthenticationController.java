@@ -5,6 +5,7 @@ import com.msho.store.rest.sebservice.storerestfulwebservice.model.User;
 import com.msho.store.rest.sebservice.storerestfulwebservice.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +25,7 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody User request
             ) {
-        return ResponseEntity.ok(authService.register(request));
+        return new ResponseEntity<>(authService.register(request), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
@@ -35,7 +36,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh_token")
-    public ResponseEntity refreshToken(
+    public ResponseEntity<Object> refreshToken(
             HttpServletRequest request,
             HttpServletResponse response
     ) {

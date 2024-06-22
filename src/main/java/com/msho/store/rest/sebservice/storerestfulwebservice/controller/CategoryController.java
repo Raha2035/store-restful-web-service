@@ -2,144 +2,88 @@ package com.msho.store.rest.sebservice.storerestfulwebservice.controller;
 
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.Category;
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.Product;
-import com.msho.store.rest.sebservice.storerestfulwebservice.repository.CategoryRepository;
-import com.msho.store.rest.sebservice.storerestfulwebservice.repository.ProductRepository;
 
+import com.msho.store.rest.sebservice.storerestfulwebservice.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class CategoryController {
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
-    private final ProductRepository productRepository;
-
-    public CategoryController(CategoryRepository categoryRepository, ProductRepository productRepository) {
-        this.categoryRepository = categoryRepository;
-        this.productRepository = productRepository;
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/categories/all-categories")
-    public List<Category> findAllCategories(){
-        return categoryRepository.findAll();
+    public ResponseEntity<Object> findAllCategories(){
+        List<Category> categories = categoryService.getAllCategories();
+        return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
     @GetMapping("/categories/get-category/{id}")
     public ResponseEntity<Category> findOneCategories(@PathVariable int id){
-        Optional<Category> category = categoryRepository.findById(id);
-        return new ResponseEntity<>(category.get() , HttpStatus.OK);
+        Category category = categoryService.findCategoryById(id);
+        return new ResponseEntity<>(category , HttpStatus.OK);
     }
 
     @PostMapping("/categories/create-category")
     public ResponseEntity<Object> createCategory(@RequestBody Category category){
-        Category savedCategory = categoryRepository.save(category);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(savedCategory.getID()).toUri();
-
-        return ResponseEntity.created(location).build();
+        categoryService.saveCategory(category);
+        return new ResponseEntity<>("Category successfully created", HttpStatus.CREATED);
     }
 
     @DeleteMapping("/categories/delete-category/{id}")
-    public void deleteOneCategory(@PathVariable int id){
-        categoryRepository.deleteById(id);
+    public ResponseEntity<Object> deleteOneCategory(@PathVariable int id){
+        categoryService.deleteCategoryById(id);
+        return new ResponseEntity<>("Category successfully deleted", HttpStatus.OK);
     }
 
     @PutMapping("/categories/update-category/{id}")
-    public void modifyOneCategory(@PathVariable int id, @RequestBody Category category){
-        Optional<Category> oldCategory = categoryRepository.findById(id);
-
-        if (oldCategory.isEmpty())
-            throw new RuntimeException("Category " + id + " not found");
-
-        category.setID(oldCategory.get().getID());
-        categoryRepository.save(category);
-
+    public ResponseEntity<Object> modifyOneCategory(@PathVariable int id, @RequestBody Category category){
+        categoryService.editCategory(id, category);
+        return new ResponseEntity<>("Category successfully updated", HttpStatus.OK);
     }
 
     @PostMapping("/categories/{categoryId}/products/create-product")
     public ResponseEntity<Object> createProduct(@PathVariable int categoryId, @RequestBody Product product){
-        Optional<Category> category = categoryRepository.findById(categoryId);
-
-        if(category.isEmpty()){
-            throw new RuntimeException("Category " + categoryId + " doesn't exist");
-        }
-
-        product.setCategory(category.get());
-        Product savedProduct = productRepository.save(product);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{productId}")
-                        .buildAndExpand(savedProduct.getID()).toUri();
-
-        return ResponseEntity.created(location).build();
+        categoryService.createProductForThisCategory(categoryId, product);
+        return new ResponseEntity<>("Product create successfully", HttpStatus.CREATED);
     }
 
     @GetMapping("/categories/{categoryId}/products/all-products")
-    public List<Product> findAllProductsOfOneCategory(@PathVariable int categoryId){
-        Optional<Category> category = categoryRepository.findById(categoryId);
-
-        if(category.isEmpty()){
-            throw new RuntimeException("Category " + categoryId + " doesn't exist");
-        }
-
-        return productRepository.findByCategory(category.get());
+    public ResponseEntity<Object> findAllProductsOfOneCategory(@PathVariable int categoryId){
+        List<Product> products =  categoryService.findAllProductsOfSpecificCategory(categoryId);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @GetMapping("/categories/{categoryId}/products/get-product/{productId}")
-    public Product findOneProductsOfOneCategory(@PathVariable int categoryId, @PathVariable int  productId){
-        Optional<Category> category = categoryRepository.findById(categoryId);
-
-        if(category.isEmpty()){
-            throw new RuntimeException("Category " + categoryId + " doesn't exist");
-        }
-
-        return productRepository.findById(productId).get();
+    public ResponseEntity<Object> findOneProductsOfOneCategory(@PathVariable int categoryId, @PathVariable int  productId){
+        Product product = categoryService.findOneProductOfOneCategory(categoryId, productId);
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @PutMapping("/categories/{categoryId}/products/update-product/{productId}")
-    public void modifyOneProductOfOneCategory(@PathVariable int categoryId,
+    public ResponseEntity<Object> modifyOneProductOfOneCategory(@PathVariable int categoryId,
                                               @PathVariable int productId,
                                               @RequestBody Product product){
-        Optional<Category> category = categoryRepository.findById(categoryId);
-
-        if (category.isEmpty())
-            throw new RuntimeException("Category " + categoryId + " not found");
-
-        Optional<Product> oldProduct = productRepository.findById(productId);
-
-        if (oldProduct.isEmpty())
-            throw new RuntimeException("Product " + productId + " not found");
-
-        product.setID(oldProduct.get().getID());
-        product.setCategory(category.get());
-
-        productRepository.save(product);
+        categoryService.saveProductOfThisCategory(categoryId, productId, product);
+        return new ResponseEntity<>("Update successfully", HttpStatus.CREATED);
     }
 
     @DeleteMapping("/categories/{categoryId}/products/delete-product/{productId}")
-    public void deleteOneProductOfOneCategory(@PathVariable int categoryId, @PathVariable int productId){
-        Optional<Category> category = categoryRepository.findById(categoryId);
-
-        if(category.isEmpty())
-            throw new RuntimeException("Category " + categoryId + " not found");
-
-        productRepository.deleteById(productId);
+    public ResponseEntity<Object> deleteOneProductOfOneCategory(@PathVariable int categoryId, @PathVariable int productId){
+        categoryService.deleteOneProductOfOneCategory(categoryId, productId);
+        return new ResponseEntity<>("delete is Ok", HttpStatus.OK);
     }
 
     @DeleteMapping("/categories/{categoryId}/products/delete-all-products")
-    public void deleteAllProductsOfOneCategory(@PathVariable int categoryId){
-        Optional<Category> category = categoryRepository.findById(categoryId);
-
-        if(category.isEmpty())
-            throw new RuntimeException("Category " + categoryId + " not found");
-
-         productRepository.deleteByCategory(category.get());
+    public ResponseEntity<Object> deleteAllProductsOfOneCategory(@PathVariable int categoryId){
+         categoryService.deleteAllProductsOfOneCategory(categoryId);
+        return new ResponseEntity<>("delete is Ok", HttpStatus.OK);
     }
 }
 

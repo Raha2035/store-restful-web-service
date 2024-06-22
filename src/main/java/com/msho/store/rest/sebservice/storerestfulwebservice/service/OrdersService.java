@@ -1,5 +1,6 @@
 package com.msho.store.rest.sebservice.storerestfulwebservice.service;
 
+import com.msho.store.rest.sebservice.storerestfulwebservice.exception.ItemNotFoundException;
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.*;
 import com.msho.store.rest.sebservice.storerestfulwebservice.repository.*;
 import jakarta.transaction.Transactional;
@@ -11,104 +12,84 @@ import java.util.Optional;
 @Service
 public class OrdersService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final OrdersRepository ordersRepository;
 
-    private final StoreRepository storeRepository;
+    private final StoreService storeService;
 
-    private final ProductRepository productRepository;
+    private final ProductService productService;
 
-    private final StoresProductsRepository storesProductsRepository;
+    private final StoresProductsService storesProductsService;
 
-    public OrdersService(UserRepository userRepository,
-                         OrdersRepository ordersRepository,
-                         StoreRepository storeRepository,
-                         ProductRepository productRepository,
-                         StoresProductsRepository storesProductsRepository) {
-        this.userRepository = userRepository;
+    public OrdersService(UserService userService, OrdersRepository ordersRepository, StoreService storeService, ProductService productService, StoresProductsService storesProductsService) {
+        this.userService = userService;
         this.ordersRepository = ordersRepository;
-        this.storeRepository = storeRepository;
-        this.productRepository = productRepository;
-        this.storesProductsRepository = storesProductsRepository;
+        this.storeService = storeService;
+        this.productService = productService;
+        this.storesProductsService = storesProductsService;
     }
 
     private User getUserById(int id){
-        Optional<User> user = userRepository.findById(id);
-        if(user.isEmpty()){
-            throw new RuntimeException("User doesn't exist");
-        }
-
-        return user.get();
+        return userService.getSpecificUser(id);
     }
 
     private Store getStoreById(int id){
-        Optional<Store> store = storeRepository.findById(id);
-        if(store.isEmpty())
-            throw new RuntimeException("Store doesn't exist");
-
-        return store.get();
+        return storeService.findStoreById(id);
     }
 
     private Product getProductById(int id){
-        Optional<Product> product = productRepository.findById(id);
-        if(product.isEmpty())
-            throw new RuntimeException("Product doesn't exist");
-
-        return product.get();
+        return productService.findProductById(id);
     }
 
     private StoresProducts getStoresProductsByStoreAndProduct(Store store, Product product){
-        Optional<StoresProducts> storesProducts = storesProductsRepository.findByStoreAndProduct(store, product);
-        if(storesProducts.isEmpty() || storesProducts.get().getTotalCount() == 0)
-            throw new RuntimeException("This Store doesn't have this Product");
-
-        return storesProducts.get();
+        return storesProductsService.findByStoreAndProduct(store, product);
     }
 
     public List<Orders> findAllOrdersOfOneUser(int userId){
         User user = this.getUserById(userId);
-        return ordersRepository.findAllByUser(user);
+        List<Orders> orders = ordersRepository.findAllByUser(user);
+        if (orders.isEmpty())
+            throw new ItemNotFoundException("This user doesn't have any orders");
+        return orders;
     }
 
     @Transactional
-    public Orders createOrderForOneUser(int userId, Orders orders){
+    public void createOrderForOneUser(int userId, Orders order){
         User user = this.getUserById(userId);
 
-        Store store = this.getStoreById(orders.getStore().getID());
+        Store store = this.getStoreById(order.getStore().getID());
 
-        Product product = this.getProductById(orders.getProduct().getID());
+        Product product = this.getProductById(order.getProduct().getID());
 
         StoresProducts storesProducts = getStoresProductsByStoreAndProduct(store, product);
         int totalCount = storesProducts.getTotalCount();
 
-        if(orders.getNumber() > totalCount || totalCount == 0)
+        if(order.getNumber() > totalCount || totalCount == 0)
             throw new RuntimeException("Not enough inventory");
 
-        double totalPrice = orders.getNumber() * product.getFee();
+        double totalPrice = order.getNumber() * product.getFee();
 
-        orders.setUser(user);
-        orders.setStore(store);
-        orders.setProduct(product);
-        orders.setTotalPrice(totalPrice);
+        order.setUser(user);
+        order.setStore(store);
+        order.setProduct(product);
+        order.setTotalPrice(totalPrice);
 
         Orders savedOrder = ordersRepository.findByUserAndStoreAndProduct(user, store, product);
 
         if( savedOrder != null)
-            ordersRepository.updateByUserAndStoreAndProduct(user, store, product, orders.getNumber());
+            ordersRepository.updateByUserAndStoreAndProduct(user, store, product, order.getNumber());
         else
-            savedOrder = ordersRepository.save(orders);
+            savedOrder = ordersRepository.save(order);
 
         int count = totalCount - savedOrder.getNumber();
-        storesProductsRepository.updateTotalCount(storesProducts.getId(), count);
-
-        return savedOrder;
+        storesProductsService.updateTotalCount(storesProducts.getId(), count);
     }
 
     @Transactional
     public void deleteOrderById(int userId, int id){
         Optional<Orders> result = ordersRepository.findById(id);
         if (result.isEmpty())
-            throw new RuntimeException("Order: " + id + " does not exist");
+            throw new ItemNotFoundException("Order: " + id + " does not exist");
 
         Orders order = result.get();
         if(order.getUser().getId() != userId)
@@ -116,18 +97,18 @@ public class OrdersService {
         int numberOfOrderProduct = order.getNumber();
         ordersRepository.delete(order);
 
-        Optional<StoresProducts> mappedStoreProduct = storesProductsRepository.findByStoreAndProduct(order.getStore(), order.getProduct());
-        int inventory = mappedStoreProduct.get().getTotalCount();
+        StoresProducts mappedStoreProduct = storesProductsService.findByStoreAndProduct(order.getStore(), order.getProduct());
+        int inventory = mappedStoreProduct.getTotalCount();
 
         int totalCount = inventory + numberOfOrderProduct;
 
-        storesProductsRepository.updateTotalCount(mappedStoreProduct.get().getId(), totalCount);
+        storesProductsService.updateTotalCount(mappedStoreProduct.getId(), totalCount);
     }
 
     public void modifyOrder(int userId, int id, Orders order) {
         Optional<Orders> result = ordersRepository.findById(id);
         if (result.isEmpty())
-            throw new RuntimeException("Order: " + id + " does not exist");
+            throw new ItemNotFoundException("Order: " + id + " does not exist");
 
         Orders oldOrder = result.get();
         if(oldOrder.getUser().getId() != userId)

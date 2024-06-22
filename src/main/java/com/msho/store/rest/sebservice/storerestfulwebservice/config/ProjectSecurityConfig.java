@@ -37,7 +37,12 @@ public class ProjectSecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        req -> req.requestMatchers("/login/**", "/register/**", "/refresh_token/**")
+                        req -> req.requestMatchers("/v3/api-docs/**",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html" ,
+                                        "/stores/**",
+                                        "/register/**",
+                                        "/login/**")
                                 .permitAll()
                                 /*.requestMatchers("/admin_only/**").hasAuthority("ADMIN")*/
                                 .anyRequest()

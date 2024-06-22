@@ -2,8 +2,10 @@ package com.msho.store.rest.sebservice.storerestfulwebservice.config;
 
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.Token;
 import com.msho.store.rest.sebservice.storerestfulwebservice.repository.TokenRepository;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
