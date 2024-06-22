@@ -10,18 +10,32 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/*
+* REST controller for managing categories and their products
+* */
 @RestController
+@RequestMapping("/categories")
 public class CategoryController {
     private final CategoryService categoryService;
 
+    /*
+     * Constructor for CategoryController.
+     *
+     * @param categoryService the category service
+     * */
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
-    @GetMapping("/categories/all-categories")
-    public ResponseEntity<Object> findAllCategories(){
+    /*
+    * Get all categories.
+    *
+    * @return a list of all categories
+    * */
+    @GetMapping("/all-categories")
+    public ResponseEntity<List<Category>> findAllCategories(){
         List<Category> categories = categoryService.getAllCategories();
-        return new ResponseEntity<>(categories, HttpStatus.OK);
+        return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/categories/get-category/{id}")
