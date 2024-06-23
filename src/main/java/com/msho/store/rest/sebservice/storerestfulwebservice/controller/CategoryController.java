@@ -33,71 +33,153 @@ public class CategoryController {
     * @return a list of all categories
     * */
     @GetMapping("/all-categories")
-    public ResponseEntity<List<Category>> findAllCategories(){
+    public ResponseEntity<List<Category>> getAllCategories(){
         List<Category> categories = categoryService.getAllCategories();
         return ResponseEntity.ok(categories);
     }
 
-    @GetMapping("/categories/get-category/{id}")
-    public ResponseEntity<Category> findOneCategories(@PathVariable int id){
+    /*
+     * Get a category by ID.
+     *
+     * @param id the category ID
+     * @return the category with the specified ID
+     * */
+    @GetMapping("/get-category/{id}")
+    public ResponseEntity<Category> getCategoryById(@PathVariable int id){
         Category category = categoryService.findCategoryById(id);
-        return new ResponseEntity<>(category , HttpStatus.OK);
+        return ResponseEntity.ok(category);
     }
 
-    @PostMapping("/categories/create-category")
-    public ResponseEntity<Object> createCategory(@RequestBody Category category){
+    /*
+     * Create a new category.
+     *
+     * @param category the category to create
+     * @return a response indicating the result of the creation
+     * */
+    @PostMapping("/create-category")
+    public ResponseEntity<String> createCategory(@RequestBody Category category){
         categoryService.saveCategory(category);
-        return new ResponseEntity<>("Category successfully created", HttpStatus.CREATED);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("Category successfully created");
     }
 
-    @DeleteMapping("/categories/delete-category/{id}")
-    public ResponseEntity<Object> deleteOneCategory(@PathVariable int id){
+    /*
+     * Delete a category by ID.
+     *
+     * @param id the category ID
+     * @return a response indicating the result of the deletion
+     * */
+    @DeleteMapping("/delete-category/{id}")
+    public ResponseEntity<String> deleteCategory(@PathVariable int id){
         categoryService.deleteCategoryById(id);
-        return new ResponseEntity<>("Category successfully deleted", HttpStatus.OK);
+        return ResponseEntity.ok("Category successfully deleted");
     }
 
-    @PutMapping("/categories/update-category/{id}")
-    public ResponseEntity<Object> modifyOneCategory(@PathVariable int id, @RequestBody Category category){
+    /*
+     * Update a category by ID.
+     *
+     * @param id the category ID
+     * @param category the updated category
+     * @return a response indicating the result of the update
+     * */
+    @PutMapping("/update-category/{id}")
+    public ResponseEntity<String> updateCategory(
+            @PathVariable int id,
+            @RequestBody Category category){
         categoryService.editCategory(id, category);
-        return new ResponseEntity<>("Category successfully updated", HttpStatus.OK);
+        return ResponseEntity.ok("Category successfully updated");
     }
 
-    @PostMapping("/categories/{categoryId}/products/create-product")
-    public ResponseEntity<Object> createProduct(@PathVariable int categoryId, @RequestBody Product product){
+    /*
+    * Create a new product for a specific category.
+    *
+    * @param categoryId the category ID
+    * @param product the product to create
+    * @return a response indicating the result of the creation
+    * */
+    @PostMapping("/{categoryId}/products/create-product")
+    public ResponseEntity<String> createProduct(
+            @PathVariable int categoryId,
+            @RequestBody Product product){
         categoryService.createProductForThisCategory(categoryId, product);
-        return new ResponseEntity<>("Product create successfully", HttpStatus.CREATED);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("Product create successfully");
     }
 
-    @GetMapping("/categories/{categoryId}/products/all-products")
-    public ResponseEntity<Object> findAllProductsOfOneCategory(@PathVariable int categoryId){
+    /*
+    * Get all products for a specific category.
+    *
+    * @param categoryId the category ID
+    * @return a list of products for the specified category
+    * */
+    @GetMapping("/{categoryId}/products/all-products")
+    public ResponseEntity<List<Product>> getAllProductsByCategoryId(@PathVariable int categoryId){
         List<Product> products =  categoryService.findAllProductsOfSpecificCategory(categoryId);
-        return new ResponseEntity<>(products, HttpStatus.OK);
+        return ResponseEntity.ok(products);
     }
 
-    @GetMapping("/categories/{categoryId}/products/get-product/{productId}")
-    public ResponseEntity<Object> findOneProductsOfOneCategory(@PathVariable int categoryId, @PathVariable int  productId){
+
+    /*
+    * Get a product by ID for a specific category.
+    *
+    * @param categoryId the category ID
+    * @param productId the product ID
+    *
+    * @return the product with the specified ID for the specified category
+    * */
+    @GetMapping("/{categoryId}/products/get-product/{productId}")
+    public ResponseEntity<Product> getProductById(
+            @PathVariable int categoryId,
+            @PathVariable int  productId){
         Product product = categoryService.findOneProductOfOneCategory(categoryId, productId);
-        return new ResponseEntity<>(product, HttpStatus.OK);
+        return ResponseEntity.ok(product);
     }
 
-    @PutMapping("/categories/{categoryId}/products/update-product/{productId}")
-    public ResponseEntity<Object> modifyOneProductOfOneCategory(@PathVariable int categoryId,
-                                              @PathVariable int productId,
-                                              @RequestBody Product product){
+    /*
+    * Update a product by ID for a specific category.
+    *
+    * @param categoryId the category ID
+    * @param productId the product ID
+    * @param product the updated product
+    * @return a response indicating the result of the update
+    * */
+    @PutMapping("/{categoryId}/products/update-product/{productId}")
+    public ResponseEntity<String> updateProduct(@PathVariable int categoryId,
+                                                @PathVariable int productId,
+                                                @RequestBody Product product){
         categoryService.saveProductOfThisCategory(categoryId, productId, product);
-        return new ResponseEntity<>("Update successfully", HttpStatus.CREATED);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("Update successfully");
     }
 
-    @DeleteMapping("/categories/{categoryId}/products/delete-product/{productId}")
-    public ResponseEntity<Object> deleteOneProductOfOneCategory(@PathVariable int categoryId, @PathVariable int productId){
+    /*
+    * Delete a product by ID for a specific category.
+    *
+    * @param categoryId the category ID
+     * @param productId the product ID
+     * @return a response indicating the result of the deletion
+    * */
+    @DeleteMapping("/{categoryId}/products/delete-product/{productId}")
+    public ResponseEntity<String> deleteProduct(
+            @PathVariable int categoryId,
+            @PathVariable int productId){
         categoryService.deleteOneProductOfOneCategory(categoryId, productId);
-        return new ResponseEntity<>("delete is Ok", HttpStatus.OK);
+        return ResponseEntity.ok("delete is Ok");
     }
 
-    @DeleteMapping("/categories/{categoryId}/products/delete-all-products")
-    public ResponseEntity<Object> deleteAllProductsOfOneCategory(@PathVariable int categoryId){
+    /*
+     * Delete all products for a specific category.
+     *
+     * @param categoryId the category ID
+     * @return a response indicating the result of the deletion
+     * */
+    @DeleteMapping("/{categoryId}/products/delete-all-products")
+    public ResponseEntity<String> removeAllProductsFromCategory(@PathVariable int categoryId){
          categoryService.deleteAllProductsOfOneCategory(categoryId);
-        return new ResponseEntity<>("delete is Ok", HttpStatus.OK);
+        return ResponseEntity.ok("delete is Ok");
     }
 }
 
