@@ -1,14 +1,18 @@
 package com.msho.store.rest.sebservice.storerestfulwebservice.controller;
 
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.*;
+import com.msho.store.rest.sebservice.storerestfulwebservice.service.ImageService;
 import com.msho.store.rest.sebservice.storerestfulwebservice.service.OrdersService;
 import com.msho.store.rest.sebservice.storerestfulwebservice.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /*
@@ -20,16 +24,24 @@ public class UserController {
     private final UserService userService;
     private final OrdersService ordersService;
 
+    private final ImageService imageService;
+
+
     /*
     * Constructor for UserController.
     *
     * @param userService the user service
     *
     * @param ordersService the orders service
+    *
+    * @param imageService the image service
     * */
-    public UserController(UserService userService, OrdersService ordersService) {
+    public UserController(UserService userService,
+                          OrdersService ordersService,
+                          ImageService imageService) {
         this.userService = userService;
         this.ordersService = ordersService;
+        this.imageService = imageService;
     }
 
     /*
@@ -119,6 +131,35 @@ public class UserController {
                                               @Valid @RequestBody Orders order){
         ordersService.modifyOrder(userId, id, order);
         return ResponseEntity.status(HttpStatus.CREATED).body("Order successfully updated");
+    }
+
+    /*
+    * Upload an image for a specific user.
+    *
+    * @param id the user ID
+    * @param file the image file
+    * @return a response indicating the result of the uploading
+    * */
+    @PostMapping("/{id}/image")
+    public ResponseEntity<?> uploadImage(@PathVariable int id,
+                                         @RequestParam("image") MultipartFile file) throws IOException {
+        String uploadImage = imageService.uploadImage(id, file);
+        return ResponseEntity.status(HttpStatus.OK).body(uploadImage);
+    }
+
+    /*
+     * Download an image for a specific user.
+     *
+     * @param id the user ID
+     * @param fileName the image's name
+     * @return an image for a specific user
+     * */
+    @GetMapping("/{id}/download-image")
+    public ResponseEntity<?> downloadImage(@PathVariable int id) {
+        byte[] imageData = imageService.downloadImage(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.valueOf(MediaType.IMAGE_PNG_VALUE))
+                .body(imageData);
     }
 }
 
