@@ -39,7 +39,7 @@ public class UserController {
     * */
     @GetMapping("/all-users")
     public ResponseEntity<List<User>> getAllUsers(){
-        return ResponseEntity.ok(userService.allUsers());
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     /*
@@ -50,7 +50,7 @@ public class UserController {
     * */
     @GetMapping("/get-user/{id}")
     public ResponseEntity<User> getUserById(@NotNull @PathVariable int id){
-        return ResponseEntity.ok(userService.getSpecificUser(id));
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     /*
@@ -61,7 +61,7 @@ public class UserController {
     * */
     @DeleteMapping("/delete-user/{id}")
     public ResponseEntity<String> deleteUser(@NotNull @PathVariable int id){
-       userService.deleteSpecificUser(id);
+       userService.deleteUserById(id);
        return ResponseEntity.ok("user successfully deleted.");
     }
 

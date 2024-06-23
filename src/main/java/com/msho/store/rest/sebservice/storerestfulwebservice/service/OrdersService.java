@@ -30,7 +30,7 @@ public class OrdersService {
     }
 
     private User getUserById(int id){
-        return userService.getSpecificUser(id);
+        return userService.getUserById(id);
     }
 
     private Store getStoreById(int id){
