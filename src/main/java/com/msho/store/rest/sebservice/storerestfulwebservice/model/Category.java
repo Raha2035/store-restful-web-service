@@ -4,10 +4,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "category")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,64 +32,4 @@ public class Category {
     @OneToMany (mappedBy = "category")
     @JsonIgnore
     private List<Product> products;
-
-    public Category() {
-    }
-
-    public Category(int ID, String name, byte value, byte available) {
-        this.ID = ID;
-        this.name = name;
-        this.value = value;
-        this.available = available;
-    }
-
-    public int getID() {
-        return ID;
-    }
-
-    public void setID(int ID) {
-        this.ID = ID;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public byte getValue() {
-        return value;
-    }
-
-    public void setValue(byte value) {
-        this.value = value;
-    }
-
-    public byte getAvailable() {
-        return available;
-    }
-
-    public void setAvailable(byte available) {
-        this.available = available;
-    }
-
-    public List<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<Product> products) {
-        this.products = products;
-    }
-
-    @Override
-    public String toString() {
-        return "Category{" +
-                "ID=" + ID +
-                ", name='" + name + '\'' +
-                ", value=" + value +
-                ", available=" + available +
-                '}';
-    }
 }

@@ -5,18 +5,16 @@ import com.msho.store.rest.sebservice.storerestfulwebservice.model.Product;
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.Store;
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.StoresProducts;
 import com.msho.store.rest.sebservice.storerestfulwebservice.repository.StoresProductsRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class StoresProductsService {
     private final StoresProductsRepository repository;
-
-    public StoresProductsService(StoresProductsRepository repository) {
-        this.repository = repository;
-    }
 
     public StoresProducts findByStoreAndProduct(Store store, Product product) {
         Optional<StoresProducts> result = repository.findByStoreAndProduct(store, product);

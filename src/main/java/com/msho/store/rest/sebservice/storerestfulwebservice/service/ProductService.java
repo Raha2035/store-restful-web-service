@@ -4,18 +4,16 @@ import com.msho.store.rest.sebservice.storerestfulwebservice.exception.ItemNotFo
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.Category;
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.Product;
 import com.msho.store.rest.sebservice.storerestfulwebservice.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository repository;
-
-    public ProductService(ProductRepository repository) {
-        this.repository = repository;
-    }
 
     public Product findProductById(int id) {
         Optional<Product> product = repository.findById(id);
@@ -27,7 +25,6 @@ public class ProductService {
     public void saveProduct(Product product) {
         repository.save(product);
     }
-
 
     public List<Product> findAllProductsOfSpecificCategory(int categoryId) {
         return repository.findAllByCategoryID(categoryId);

@@ -7,7 +7,7 @@ import com.msho.store.rest.sebservice.storerestfulwebservice.model.User;
 import com.msho.store.rest.sebservice.storerestfulwebservice.repository.TokenRepository;
 import com.msho.store.rest.sebservice.storerestfulwebservice.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
 
     private final UserRepository repository;
@@ -26,18 +27,6 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;
     private final AuthenticationManager authenticationManager;
-
-    public AuthenticationService(UserRepository repository,
-                                 PasswordEncoder passwordEncoder,
-                                 JwtService jwtService,
-                                 TokenRepository tokenRepository,
-                                 AuthenticationManager authenticationManager) {
-        this.repository = repository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.tokenRepository = tokenRepository;
-        this.authenticationManager = authenticationManager;
-    }
 
     public AuthenticationResponse register(User request) {
 
@@ -106,8 +95,7 @@ public class AuthenticationService {
     }
 
     public ResponseEntity<Object> refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response) {
+            HttpServletRequest request) {
         // extract the token from authorization header
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 

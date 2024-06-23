@@ -4,6 +4,7 @@ import com.msho.store.rest.sebservice.storerestfulwebservice.model.Store;
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.StoresProducts;
 import com.msho.store.rest.sebservice.storerestfulwebservice.service.StoreService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,17 +16,9 @@ import java.util.List;
 * */
 @RestController
 @RequestMapping("/stores")
+@RequiredArgsConstructor
 public class StoreController {
     private final StoreService storeService;
-
-    /*
-    * Constructor for StoreController
-    *
-    * @param storeService the store service
-    * */
-    public StoreController(StoreService storeService) {
-        this.storeService = storeService;
-    }
 
     /*
     * Get all stores.

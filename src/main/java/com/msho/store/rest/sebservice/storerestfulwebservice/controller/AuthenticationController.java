@@ -4,7 +4,7 @@ import com.msho.store.rest.sebservice.storerestfulwebservice.model.Authenticatio
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.User;
 import com.msho.store.rest.sebservice.storerestfulwebservice.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,18 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 * REST controller for managing user authentication.
 * */
 @RestController
+@RequiredArgsConstructor
 public class AuthenticationController {
 
     private final AuthenticationService authService;
-
-    /*
-    * Constructor for AuthenticationController.
-    *
-    * @param authService the authentication service
-    * */
-    public AuthenticationController(AuthenticationService authService) {
-        this.authService = authService;
-    }
 
 
     /*
@@ -64,9 +56,8 @@ public class AuthenticationController {
     * */
     @PostMapping("/refresh_token")
     public ResponseEntity<Object> refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
+            HttpServletRequest request
     ) {
-        return authService.refreshToken(request, response);
+        return authService.refreshToken(request);
     }
 }

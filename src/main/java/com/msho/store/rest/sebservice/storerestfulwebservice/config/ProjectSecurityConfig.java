@@ -2,6 +2,7 @@ package com.msho.store.rest.sebservice.storerestfulwebservice.config;
 
 import com.msho.store.rest.sebservice.storerestfulwebservice.filter.JwtAuthenticationFilter;
 import com.msho.store.rest.sebservice.storerestfulwebservice.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -18,19 +19,12 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@RequiredArgsConstructor
 public class ProjectSecurityConfig {
 
     private final UserService userService;
-
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
     private final CustomLogoutHandler logoutHandler;
-
-    public ProjectSecurityConfig(UserService userService, JwtAuthenticationFilter jwtAuthenticationFilter, CustomLogoutHandler logoutHandler) {
-        this.userService = userService;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.logoutHandler = logoutHandler;
-    }
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -75,9 +69,3 @@ public class ProjectSecurityConfig {
         return configuration.getAuthenticationManager();
     }
 }
-
-/*http.authorizeHttpRequests(request -> request.requestMatchers("/v3/api-docs/**",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html" , "/users/**", "/categories/**").permitAll()
-                .anyRequest().authenticated());
-        return http.build();*/

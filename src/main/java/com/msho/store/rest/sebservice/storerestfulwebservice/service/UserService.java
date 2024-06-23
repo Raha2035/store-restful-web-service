@@ -3,6 +3,7 @@ package com.msho.store.rest.sebservice.storerestfulwebservice.service;
 import com.msho.store.rest.sebservice.storerestfulwebservice.exception.ItemNotFoundException;
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.User;
 import com.msho.store.rest.sebservice.storerestfulwebservice.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,18 +18,10 @@ import java.util.Optional;
 *
 * */
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-
-    /*
-    * Constructor for UserService
-    *
-    * @param userRepository the user repository
-    * */
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     /*
     * Get all users .

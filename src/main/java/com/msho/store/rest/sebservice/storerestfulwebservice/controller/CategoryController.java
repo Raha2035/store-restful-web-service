@@ -4,6 +4,7 @@ import com.msho.store.rest.sebservice.storerestfulwebservice.model.Category;
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.Product;
 
 import com.msho.store.rest.sebservice.storerestfulwebservice.service.CategoryService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,17 +16,10 @@ import java.util.List;
 * */
 @RestController
 @RequestMapping("/categories")
+@RequiredArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
 
-    /*
-     * Constructor for CategoryController.
-     *
-     * @param categoryService the category service
-     * */
-    public CategoryController(CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
 
     /*
     * Get all categories.

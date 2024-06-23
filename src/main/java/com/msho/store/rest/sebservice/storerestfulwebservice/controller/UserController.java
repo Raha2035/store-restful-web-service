@@ -6,6 +6,7 @@ import com.msho.store.rest.sebservice.storerestfulwebservice.service.OrdersServi
 import com.msho.store.rest.sebservice.storerestfulwebservice.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,29 +21,12 @@ import java.util.List;
 * */
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
     private final OrdersService ordersService;
-
     private final ImageService imageService;
 
-
-    /*
-    * Constructor for UserController.
-    *
-    * @param userService the user service
-    *
-    * @param ordersService the orders service
-    *
-    * @param imageService the image service
-    * */
-    public UserController(UserService userService,
-                          OrdersService ordersService,
-                          ImageService imageService) {
-        this.userService = userService;
-        this.ordersService = ordersService;
-        this.imageService = imageService;
-    }
 
     /*
     * Get all users.

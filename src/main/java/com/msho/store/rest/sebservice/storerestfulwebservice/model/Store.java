@@ -2,9 +2,15 @@ package com.msho.store.rest.sebservice.storerestfulwebservice.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-
+import lombok.*;
 
 @Entity
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "store")
 public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,32 +18,4 @@ public class Store {
 
     @JsonProperty("store-name")
     private String name;
-
-    public Store() {
-    }
-
-    public int getID() {
-        return ID;
-    }
-
-    public void setID(int ID) {
-        this.ID = ID;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Store{" +
-                "ID=" + ID +
-                ", name='" + name + '\'' +
-                '}';
-    }
 }

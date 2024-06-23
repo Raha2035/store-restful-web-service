@@ -4,30 +4,21 @@ import com.msho.store.rest.sebservice.storerestfulwebservice.exception.ItemNotFo
 import com.msho.store.rest.sebservice.storerestfulwebservice.model.*;
 import com.msho.store.rest.sebservice.storerestfulwebservice.repository.*;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class OrdersService {
 
     private final UserService userService;
     private final OrdersRepository ordersRepository;
-
     private final StoreService storeService;
-
     private final ProductService productService;
-
     private final StoresProductsService storesProductsService;
-
-    public OrdersService(UserService userService, OrdersRepository ordersRepository, StoreService storeService, ProductService productService, StoresProductsService storesProductsService) {
-        this.userService = userService;
-        this.ordersRepository = ordersRepository;
-        this.storeService = storeService;
-        this.productService = productService;
-        this.storesProductsService = storesProductsService;
-    }
 
     private User getUserById(int id){
         return userService.getUserById(id);
